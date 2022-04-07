@@ -69,4 +69,9 @@ new_doll_edges <- doll_edges_net %>%
   left_join(node_to) 
 
 ggraph(new_doll_edges, layout="fr") + geom_edge_link() +
-  geom_edge_fan(aes(color = Code), show.legend = F) + geom_node_point(aes(size = Mentions, color = Code)) + geom_node_text(aes(label = ifelse(Mentions > 2, name, NA), size=2,  repel = T)) + set.seed(3)
+  geom_edge_fan(aes(color = Code), show.legend = F) + geom_node_point(aes(size = Mentions, color = Code)) + geom_node_text(aes(label = ifelse(Mentions > 2, name, NA), size=2,  repel = T))
+
+#appendix: community detection
+new_doll_edges <- new_doll_edges %>% activate(nodes) %>% mutate(Community = as.factor(group_optimal(weights=NULL)))
+
+ggraph(new_doll_edges, layout="fr") + geom_edge_link() + geom_node_point(aes(size = Mentions, color = Community)) + geom_node_text(aes(label = ifelse(Mentions > 2, name, NA), size=2,  repel = T))
