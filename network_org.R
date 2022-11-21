@@ -5,6 +5,7 @@ library(tidygraph)
 library(dplyr)
 library(igraph)
 library(ggraph)
+library(ggplot2)
 
 
 culture_net <- read_csv("input/culture.net.csv")[,c("Source", "Target")]
@@ -30,8 +31,9 @@ new_part_net <- part_net %>%
   activate(edges) %>%
   left_join(node_to2) 
 
-ggraph(new_part_net, layout="fr") + geom_edge_link() + geom_node_point(aes(size = Mentions, color = Code)) + geom_node_text(aes(label = name), size=2,  repel = T)  +
-  geom_edge_fan(aes(color = Code), show.legend = F)+set.seed(1)
+set.seed(2)
+ggraph(new_part_net, layout="fr") + geom_edge_link() + geom_node_point(aes(size = Mentions, color = Code))+
+  geom_edge_fan(aes(color = Code), show.legend = F)+ geom_node_text(aes(label = name), size=2,  repel = T)
 
 #make cultural reference network
 
@@ -50,8 +52,9 @@ new_culture_net <- culture_net %>%
   activate(edges) %>%
   left_join(node_to1) 
 
+set.seed(2)
 ggraph(new_culture_net, layout="fr") + geom_edge_link() + geom_node_point(aes(size = Mentions, color = Code)) +
-  geom_edge_fan(aes(color = Code), show.legend = F) + geom_node_text(aes(label = ifelse(Mentions > 2, name, NA)), size=2,  repel = T) + set.seed(1)
+  geom_edge_fan(aes(color = Code), show.legend = F) + geom_node_text(aes(label = ifelse(Mentions > 2, name, NA)), size=2,  repel = T)
 
 #make full network
 doll_edges_net <- as_tbl_graph(doll_edges)
@@ -68,10 +71,12 @@ new_doll_edges <- doll_edges_net %>%
   activate(edges) %>%
   left_join(node_to) 
 
+set.seed(2)
 ggraph(new_doll_edges, layout="fr") + geom_edge_link() +
   geom_edge_fan(aes(color = Code), show.legend = F) + geom_node_point(aes(size = Mentions, color = Code)) + geom_node_text(aes(label = ifelse(Mentions > 2, name, NA), size=2,  repel = T))
 
 #appendix: community detection
 new_doll_edges <- new_doll_edges %>% activate(nodes) %>% mutate(Community = as.factor(group_optimal(weights=NULL)))
 
+set.seed(2)
 ggraph(new_doll_edges, layout="fr") + geom_edge_link() + geom_node_point(aes(size = Mentions, color = Community)) + geom_node_text(aes(label = ifelse(Mentions > 2, name, NA), size=2,  repel = T))
